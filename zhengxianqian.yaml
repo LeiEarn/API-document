@@ -8,10 +8,6 @@ host: virtserver.swaggerhub.com
 basePath: /SYSU-GFS/zhengxianqian/1.0.0
 schemes:
 - https
-security:
-- application:
-  - read
-  - write
 paths:
   /user/login:
     post:
@@ -44,16 +40,9 @@ paths:
         200:
           description: OK, return the user's info and hasAuthenticated.
           schema:
-            type: object
-            properties:
-              userId:
-                type: string
-              userInfo:
-                $ref: '#/definitions/userInfo'
-              proveState:
-                type: string
+            $ref: '#/definitions/userInfo'
         400:
-          description: 'Error'
+          description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
   /user/prove:
@@ -70,14 +59,9 @@ paths:
         200:
           description: OK, return the user indentity info
           schema:
-            type: object
-            properties:
-              idenInfo:
-                $ref: '#/definitions/idenInfo'
-              creditScore:
-                type: integer
+            $ref: '#/definitions/idenInfoWithCredit'
         400:
-          description: 'Error'
+          description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
     post:
@@ -99,7 +83,7 @@ paths:
         200:
           description: OK, set creditScore 100.
         400:
-          description: 'Error'
+          description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
   /user/modify:
@@ -122,7 +106,7 @@ paths:
           schema:
             $ref: '#/definitions/userInfo'
         400:
-          description: 'Error'
+          description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
   /user/getProveState:
@@ -139,12 +123,9 @@ paths:
         200:
           description: check success
           schema:
-            type: object
-            properties:
-              proveState:
-                type: string
+            $ref: '#/definitions/proveState'
         400:
-          description: 'Error'
+          description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
   /user/getBalance:
@@ -165,7 +146,7 @@ paths:
               balance:
                 type: number
         400:
-          description: 'Error'
+          description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
   /user/reCharge:
@@ -190,7 +171,7 @@ paths:
               balance:
                 type: number
         400:
-          description: 'Error'
+          description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
   /group/createGroup:
@@ -211,7 +192,7 @@ paths:
         200:
           description: create success
         400:
-          description: 'Error'
+          description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
   /group/joinGroup:
@@ -232,7 +213,7 @@ paths:
         200:
           description: join success
         400:
-          description: 'Error'
+          description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
   /group/getGroup:
@@ -253,7 +234,7 @@ paths:
             items:
               type: string
         400:
-          description: 'Error'
+          description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
   /group/getCreatedGroup:
@@ -274,7 +255,7 @@ paths:
             items:
               type: string
         400:
-          description: 'Error'
+          description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
   /group/getJoinedGroup:
@@ -295,7 +276,7 @@ paths:
             items:
               type: string
         400:
-          description: 'Error'
+          description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
   /task/getTask:
@@ -319,7 +300,7 @@ paths:
             items:
               $ref: '#/definitions/task'
         400:
-          description: 'Error'
+          description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
   /task/getPublishedTask:
@@ -341,7 +322,7 @@ paths:
             items:
               $ref: '#/definitions/task'
         400:
-          description: 'Error'
+          description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
   /task/getAcceptedTask:
@@ -363,7 +344,7 @@ paths:
             items:
               $ref: '#/definitions/task'
         400:
-          description: 'Error'
+          description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
   /task/getTaskDetail:
@@ -386,19 +367,9 @@ paths:
         200:
           description: success
           schema:
-            type: object
-            properties:
-              user:
-                $ref: '#/definitions/publisherInfo'
-              content:
-                $ref: '#/definitions/taskdetail'
-              isPublisher:
-                type: boolean
-              hasReceived:
-                type: integer
-                description: 0 stands for hasn't, 1 stands for has received, 2 stands for under review, 3 stands for has completed
+            $ref: '#/definitions/allTaskDetail'
         400:
-          description: 'Error'
+          description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
   /task/acceptTask:
@@ -420,7 +391,7 @@ paths:
         200:
           description: receive success
         400:
-          description: 'Error'
+          description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
   /task/commitJob:
@@ -447,7 +418,7 @@ paths:
         200:
           description: complete success
         400:
-          description: 'Error'
+          description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
   /task/addTaskInfo:
@@ -473,7 +444,7 @@ paths:
         200:
           description: add success
         400:
-          description: 'Error'
+          description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
   /task/abandonTask:
@@ -495,7 +466,7 @@ paths:
         200:
           description: complete success
         400:
-          description: 'Error'
+          description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
   /task/abortTask:
@@ -517,7 +488,7 @@ paths:
         200:
           description: complete success
         400:
-          description: 'Error'
+          description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
   /task/publishTask:
@@ -540,28 +511,24 @@ paths:
         200:
           description: publish success
         400:
-          description: 'Error'
+          description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
-securityDefinitions:
-  application:
-    type: oauth2
-    tokenUrl: https://zhengxianqian.org
-    flow: application
-    scopes:
-      write: allows modifying resources
-      read: allows reading resources
 definitions:
   ErrorResponse:
-    type: 'object'
+    type: object
     properties:
       message:
-        type: 'string'
+        type: string
   userInfo:
     properties:
+      userId:
+        type: string
       nickName:
         type: string
       avartUrl:
+        type: string
+      proveState:
         type: string
   idenInfo:
     properties:
@@ -662,3 +629,24 @@ definitions:
         type: string
       creditScore:
         type: integer
+  idenInfoWithCredit:
+    properties:
+      idenInfo:
+        $ref: '#/definitions/idenInfo'
+      creditScore:
+        type: integer
+  proveState:
+    properties:
+      proveState:
+        type: string
+  allTaskDetail:
+    properties:
+      user:
+        $ref: '#/definitions/publisherInfo'
+      content:
+        $ref: '#/definitions/taskdetail'
+      isPublisher:
+        type: boolean
+      hasReceived:
+        type: integer
+        description: 0 stands for hasn't, 1 stands for has received, 2 stands for under review, 3 stands for has completed
