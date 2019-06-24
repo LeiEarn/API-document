@@ -1,0 +1,739 @@
+---
+swagger: "2.0"
+info:
+  description: This is an example of using OAuth2 Application Flow in a specification to describe security to your API.
+  version: 1.0.0
+  title: Sample Application Flow OAuth2 Project
+host: virtserver.swaggerhub.com
+basePath: /SYSU-GFS/zhengxianqian/1.0.0
+schemes:
+- https
+security:
+- application:
+  - read
+  - write
+paths:
+  /login:
+    post:
+      tags:
+      - user
+      summary: Users login
+      description: Users login
+      parameters:
+      - name: js_code
+        in: query
+        description: user's js_code
+        required: true
+        type: string
+      - name: app_id
+        in: query
+        description: miniprogram app_id
+        required: true
+        type: string
+      - name: app_secret
+        in: query
+        description: miniprogram app_secret
+        required: true
+        type: string
+      - name: encryptedData
+        in: query
+        description: user's encryptedData when he/she has authensized getUserInfo
+        required: false
+        type: string
+      responses:
+        200:
+          description: OK, return the user's info and hasAuthenticated.
+          schema:
+            type: object
+            properties:
+              userId:
+                type: string
+              userInfo:
+                $ref: '#/definitions/inline_response_200_userInfo'
+              authState:
+                type: string
+  /prove:
+    get:
+      tags:
+      - user
+      summary: get user's indentity info
+      parameters:
+      - name: userId
+        in: query
+        required: false
+        type: string
+      responses:
+        200:
+          description: OK, return the user indentity info
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              sex:
+                type: string
+              idenType:
+                type: string
+              tel:
+                type: string
+              school:
+                type: string
+              company:
+                type: string
+              id:
+                type: string
+                description: student id or worker id
+              creditScore:
+                type: integer
+    post:
+      tags:
+      - user
+      summary: User provide his prove identity.
+      parameters:
+      - in: body
+        name: idenInfo
+        required: true
+        schema:
+          $ref: '#/definitions/idenInfo'
+      - name: cert
+        in: query
+        description: user's cert path
+        required: true
+        type: string
+      responses:
+        200:
+          description: OK, set creditScore 100.
+  /modify:
+    post:
+      tags:
+      - user
+      summary: User modify his basic info.
+      parameters:
+      - in: body
+        name: userInfo
+        required: false
+        schema:
+          $ref: '#/definitions/userInfo'
+      - name: avartUrl
+        in: query
+        required: false
+        type: string
+      responses:
+        200:
+          description: modify success
+          schema:
+            type: object
+            properties:
+              nickName:
+                type: string
+              avartUrl:
+                type: string
+              address:
+                type: string
+  /getProveState:
+    get:
+      tags:
+      - user
+      summary: User get his authState.
+      parameters:
+      - name: userId
+        in: query
+        required: false
+        type: string
+      responses:
+        200:
+          description: check success
+          schema:
+            type: object
+            properties:
+              hasAuthensized:
+                type: boolean
+  /getBalance:
+    get:
+      tags:
+      - user
+      summary: User get the balance.
+      parameters:
+      - name: userId
+        in: query
+        required: true
+        type: string
+      responses:
+        200:
+          description: publish success
+          schema:
+            properties:
+              balance:
+                type: number
+  /reCharge:
+    post:
+      tags:
+      - user
+      summary: User recharge.
+      parameters:
+      - name: userId
+        in: query
+        required: true
+        type: string
+      - name: money
+        in: query
+        required: true
+        type: number
+      responses:
+        200:
+          description: publish success
+          schema:
+            properties:
+              balance:
+                type: number
+  /createGroup:
+    get:
+      tags:
+      - group
+      summary: User create the group.
+      parameters:
+      - name: userId
+        in: query
+        required: true
+        type: string
+      - name: groupName
+        in: query
+        required: true
+        type: string
+      responses:
+        200:
+          description: create success
+        400:
+          description: '{message: the group already exists}'
+  /joinGroup:
+    post:
+      tags:
+      - group
+      summary: User join the group.
+      parameters:
+      - name: userId
+        in: query
+        required: true
+        type: string
+      - name: groupName
+        in: query
+        required: true
+        type: string
+      responses:
+        200:
+          description: join success
+        400:
+          description: '{message: the group doesn''t exist}'
+  /getGroup:
+    get:
+      tags:
+      - group
+      summary: User get the all task.
+      parameters:
+      - name: userId
+        in: query
+        required: true
+        type: string
+      responses:
+        200:
+          description: get success
+          schema:
+            type: array
+            items:
+              type: string
+  /getCreatedGroup:
+    get:
+      tags:
+      - group
+      summary: User publish the task he created.
+      parameters:
+      - name: userId
+        in: query
+        required: true
+        type: string
+      responses:
+        200:
+          description: get success
+          schema:
+            type: array
+            items:
+              type: string
+  /getJoinedGroup:
+    get:
+      tags:
+      - group
+      summary: User get the groups he joined.
+      parameters:
+      - name: userId
+        in: query
+        required: true
+        type: string
+      responses:
+        200:
+          description: get success
+          schema:
+            type: array
+            items:
+              type: string
+  /getTask:
+    get:
+      tags:
+      - task
+      summary: Returns all related tasks according to the pageId.
+      description: Returns the published tasks, the max number is 10. If the page is the last page, the return all left.
+      parameters:
+      - name: pageId
+        in: query
+        description: Page number
+        required: true
+        type: integer
+        default: 0
+      responses:
+        200:
+          description: success
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                icon:
+                  type: string
+                  description: the issuer's head pic
+                title:
+                  type: string
+                desc:
+                  type: string
+                money:
+                  type: number
+                left:
+                  type: integer
+                  description: the num of the left task.
+        400:
+          description: '{"message": "cannot get data"}'
+  /getPublishedTask:
+    get:
+      tags:
+      - task
+      summary: Returns all his own published tasks in the page.
+      description: Returns the published tasks, the max number is 10. If the page is the last page, the return all left.
+      parameters:
+      - name: userId
+        in: query
+        required: true
+        type: string
+      responses:
+        200:
+          description: success
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                icon:
+                  type: string
+                  description: the issuer's head pic
+                id:
+                  type: string
+                title:
+                  type: string
+                desc:
+                  type: string
+                money:
+                  type: number
+                left:
+                  type: integer
+                  description: the num of the left task.
+        400:
+          description: '{"message": "cannot get data"}'
+  /getAcceptedTask:
+    get:
+      tags:
+      - task
+      summary: Returns all his accepted tasks in the page.
+      description: Returns the published tasks, the max number is 10. If the page is the last page, the return all left.
+      parameters:
+      - name: userId
+        in: query
+        required: true
+        type: string
+      responses:
+        200:
+          description: success
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                icon:
+                  type: string
+                  description: the issue's head pic
+                title:
+                  type: string
+                desc:
+                  type: string
+                money:
+                  type: number
+                left:
+                  type: integer
+                  description: the num of the left task.
+        400:
+          description: '{"message": "cannot get data"}'
+  /getTaskDetail:
+    get:
+      tags:
+      - task
+      summary: Returns one task's detail
+      description: Returns one task's detail
+      parameters:
+      - name: taskId
+        in: query
+        description: The task's id in database.
+        required: false
+        type: string
+      - name: userId
+        in: query
+        required: false
+        type: string
+      responses:
+        200:
+          description: success
+          schema:
+            properties:
+              user:
+                type: object
+                properties:
+                  head:
+                    type: string
+                  nickName:
+                    type: string
+                  tel:
+                    type: string
+              content:
+                type: object
+                properties:
+                  type:
+                    type: string
+                  wjxId:
+                    type: string
+                    description: if the type is '问卷星', return wjxId.
+                  title:
+                    type: string
+                  desc:
+                    type: string
+                  money:
+                    type: number
+                  num:
+                    type: integer
+                    description: the num of people who have got money.
+                  left:
+                    type: integer
+                    description: the num of the left task.
+                  condition:
+                    type: object
+                    properties:
+                      groups:
+                        type: array
+                        description: he/she who in the group can receive the task
+                        items:
+                          type: string
+                      sex:
+                        type: string
+                  steps:
+                    type: array
+                    items:
+                      type: string
+              isPublisher:
+                type: boolean
+              hasReceived:
+                type: integer
+                description: 0 stands for hasn't, 1 stands for has received, 2 stands for under review, 3 stands for has completed
+        400:
+          description: '{"message": "cannot get data"}'
+  /acceptTask:
+    post:
+      tags:
+      - task
+      summary: User accept the task.
+      description: This operation shows how to override the global security defined above, as we want to open it up for all users.
+      parameters:
+      - name: userId
+        in: query
+        required: true
+        type: string
+      - name: taskId
+        in: query
+        required: true
+        type: string
+      responses:
+        200:
+          description: receive success
+  /commitJob:
+    post:
+      tags:
+      - task
+      summary: User commit the job.
+      description: This operation shows how to override the global security defined above, as we want to open it up for all users.
+      parameters:
+      - name: userId
+        in: query
+        required: true
+        type: string
+      - name: taskId
+        in: query
+        required: true
+        type: string
+      - in: body
+        name: cert
+        required: false
+        schema:
+          $ref: '#/definitions/cert'
+      responses:
+        200:
+          description: complete success
+  /addTaskInfo:
+    post:
+      tags:
+      - task
+      summary: Publisher add the additional task detail.
+      description: This operation shows how to override the global security defined above, as we want to open it up for all users.
+      parameters:
+      - name: userId
+        in: query
+        required: true
+        type: string
+      - name: taskId
+        in: query
+        required: true
+        type: string
+      - name: extraInfo
+        in: query
+        required: true
+        type: string
+      responses:
+        200:
+          description: add success
+  /abandonTask:
+    post:
+      tags:
+      - task
+      summary: Accepter abandon the task.
+      description: This operation shows how to override the global security defined above, as we want to open it up for all users.
+      parameters:
+      - name: userId
+        in: query
+        required: true
+        type: string
+      - name: taskId
+        in: query
+        required: true
+        type: string
+      responses:
+        200:
+          description: complete success
+  /abortTask:
+    post:
+      tags:
+      - task
+      summary: Publisher abort the task.
+      description: This operation shows how to override the global security defined above, as we want to open it up for all users.
+      parameters:
+      - name: userId
+        in: query
+        required: true
+        type: string
+      - name: taskId
+        in: query
+        required: true
+        type: string
+      responses:
+        200:
+          description: complete success
+  /publishTask:
+    post:
+      tags:
+      - task
+      summary: User publish the task.
+      description: User publish the normal task.
+      parameters:
+      - name: userId
+        in: query
+        required: true
+        type: string
+      - in: body
+        name: content
+        required: true
+        schema:
+          $ref: '#/definitions/content'
+      responses:
+        200:
+          description: publish success
+securityDefinitions:
+  application:
+    type: oauth2
+    tokenUrl: https://zhengxianqian.org
+    flow: application
+    scopes:
+      write: allows modifying resources
+      read: allows reading resources
+definitions:
+  userInfo:
+    type: object
+    properties:
+      nickName:
+        type: string
+      address:
+        type: string
+  inline_response_200_userInfo:
+    properties:
+      nickName:
+        type: string
+      avartUrl:
+        type: string
+  inline_response_200_5:
+    properties:
+      icon:
+        type: string
+        description: the issuer's head pic
+      id:
+        type: string
+      title:
+        type: string
+      desc:
+        type: string
+      money:
+        type: number
+      left:
+        type: integer
+        description: the num of the left task.
+  inline_response_200_6:
+    properties:
+      id:
+        type: string
+      icon:
+        type: string
+        description: the issue's head pic
+      title:
+        type: string
+      desc:
+        type: string
+      money:
+        type: number
+      left:
+        type: integer
+        description: the num of the left task.
+  idenInfo:
+    type: object
+    properties:
+      name:
+        type: string
+      sex:
+        type: string
+      tel:
+        type: string
+      idenType:
+        type: string
+      school:
+        type: string
+      company:
+        type: string
+      college:
+        type: string
+      id:
+        type: string
+  publishTask_condition:
+    properties:
+      groups:
+        type: array
+        items:
+          type: string
+      sex:
+        type: string
+      creditScore:
+        type: integer
+  cert:
+    type: object
+    properties:
+      files:
+        type: array
+        items:
+          type: string
+      remarks:
+        type: string
+  content:
+    type: object
+    properties:
+      type:
+        type: string
+      wjxId:
+        type: string
+      title:
+        type: string
+      detail:
+        type: string
+      condition:
+        $ref: '#/definitions/publishTask_condition'
+      time:
+        type: string
+      money:
+        type: number
+      number:
+        type: integer
+  inline_response_200_1:
+    properties:
+      name:
+        type: string
+      sex:
+        type: string
+      idenType:
+        type: string
+      tel:
+        type: string
+      school:
+        type: string
+      company:
+        type: string
+      id:
+        type: string
+        description: student id or worker id
+      creditScore:
+        type: integer
+  inline_response_200:
+    properties:
+      userId:
+        type: string
+      userInfo:
+        $ref: '#/definitions/inline_response_200_userInfo'
+      authState:
+        type: string
+  inline_response_200_2:
+    properties:
+      nickName:
+        type: string
+      avartUrl:
+        type: string
+      address:
+        type: string
+  inline_response_200_3:
+    properties:
+      hasAuthensized:
+        type: boolean
+  inline_response_200_4:
+    properties:
+      id:
+        type: string
+      icon:
+        type: string
+        description: the issuer's head pic
+      title:
+        type: string
+      desc:
+        type: string
+      money:
+        type: number
+      left:
+        type: integer
+        description: the num of the left task.
