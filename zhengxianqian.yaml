@@ -49,8 +49,8 @@ paths:
               userId:
                 type: string
               userInfo:
-                $ref: '#/definitions/inline_response_200_userInfo'
-              authState:
+                $ref: '#/definitions/userInfo'
+              proveState:
                 type: string
   /prove:
     get:
@@ -68,21 +68,8 @@ paths:
           schema:
             type: object
             properties:
-              name:
-                type: string
-              sex:
-                type: string
-              idenType:
-                type: string
-              tel:
-                type: string
-              school:
-                type: string
-              company:
-                type: string
-              id:
-                type: string
-                description: student id or worker id
+              idenInfo:
+                $ref: '#/definitions/idenInfo'
               creditScore:
                 type: integer
     post:
@@ -113,7 +100,7 @@ paths:
         name: userInfo
         required: false
         schema:
-          $ref: '#/definitions/userInfo'
+          $ref: '#/definitions/userInfo_1'
       - name: avartUrl
         in: query
         required: false
@@ -122,14 +109,7 @@ paths:
         200:
           description: modify success
           schema:
-            type: object
-            properties:
-              nickName:
-                type: string
-              avartUrl:
-                type: string
-              address:
-                type: string
+            $ref: '#/definitions/userInfo'
   /getProveState:
     get:
       tags:
@@ -146,8 +126,8 @@ paths:
           schema:
             type: object
             properties:
-              hasAuthensized:
-                type: boolean
+              proveState:
+                type: string
   /getBalance:
     get:
       tags:
@@ -294,22 +274,7 @@ paths:
           schema:
             type: array
             items:
-              type: object
-              properties:
-                id:
-                  type: string
-                icon:
-                  type: string
-                  description: the issuer's head pic
-                title:
-                  type: string
-                desc:
-                  type: string
-                money:
-                  type: number
-                left:
-                  type: integer
-                  description: the num of the left task.
+              $ref: '#/definitions/task'
         400:
           description: '{"message": "cannot get data"}'
   /getPublishedTask:
@@ -329,22 +294,7 @@ paths:
           schema:
             type: array
             items:
-              type: object
-              properties:
-                icon:
-                  type: string
-                  description: the issuer's head pic
-                id:
-                  type: string
-                title:
-                  type: string
-                desc:
-                  type: string
-                money:
-                  type: number
-                left:
-                  type: integer
-                  description: the num of the left task.
+              $ref: '#/definitions/task'
         400:
           description: '{"message": "cannot get data"}'
   /getAcceptedTask:
@@ -364,22 +314,7 @@ paths:
           schema:
             type: array
             items:
-              type: object
-              properties:
-                id:
-                  type: string
-                icon:
-                  type: string
-                  description: the issue's head pic
-                title:
-                  type: string
-                desc:
-                  type: string
-                money:
-                  type: number
-                left:
-                  type: integer
-                  description: the num of the left task.
+              $ref: '#/definitions/task'
         400:
           description: '{"message": "cannot get data"}'
   /getTaskDetail:
@@ -402,50 +337,12 @@ paths:
         200:
           description: success
           schema:
+            type: object
             properties:
               user:
-                type: object
-                properties:
-                  head:
-                    type: string
-                  nickName:
-                    type: string
-                  tel:
-                    type: string
+                $ref: '#/definitions/inline_response_200_3_user'
               content:
-                type: object
-                properties:
-                  type:
-                    type: string
-                  wjxId:
-                    type: string
-                    description: if the type is '问卷星', return wjxId.
-                  title:
-                    type: string
-                  desc:
-                    type: string
-                  money:
-                    type: number
-                  num:
-                    type: integer
-                    description: the num of people who have got money.
-                  left:
-                    type: integer
-                    description: the num of the left task.
-                  condition:
-                    type: object
-                    properties:
-                      groups:
-                        type: array
-                        description: he/she who in the group can receive the task
-                        items:
-                          type: string
-                      sex:
-                        type: string
-                  steps:
-                    type: array
-                    items:
-                      type: string
+                $ref: '#/definitions/taskdetail'
               isPublisher:
                 type: boolean
               hasReceived:
@@ -567,7 +464,7 @@ paths:
         name: content
         required: true
         schema:
-          $ref: '#/definitions/content'
+          $ref: '#/definitions/pubTaskInfo'
       responses:
         200:
           description: publish success
@@ -581,108 +478,14 @@ securityDefinitions:
       read: allows reading resources
 definitions:
   userInfo:
-    type: object
-    properties:
-      nickName:
-        type: string
-      address:
-        type: string
-  inline_response_200_userInfo:
     properties:
       nickName:
         type: string
       avartUrl:
         type: string
-  inline_response_200_5:
-    properties:
-      icon:
+      address:
         type: string
-        description: the issuer's head pic
-      id:
-        type: string
-      title:
-        type: string
-      desc:
-        type: string
-      money:
-        type: number
-      left:
-        type: integer
-        description: the num of the left task.
-  inline_response_200_6:
-    properties:
-      id:
-        type: string
-      icon:
-        type: string
-        description: the issue's head pic
-      title:
-        type: string
-      desc:
-        type: string
-      money:
-        type: number
-      left:
-        type: integer
-        description: the num of the left task.
   idenInfo:
-    type: object
-    properties:
-      name:
-        type: string
-      sex:
-        type: string
-      tel:
-        type: string
-      idenType:
-        type: string
-      school:
-        type: string
-      company:
-        type: string
-      college:
-        type: string
-      id:
-        type: string
-  publishTask_condition:
-    properties:
-      groups:
-        type: array
-        items:
-          type: string
-      sex:
-        type: string
-      creditScore:
-        type: integer
-  cert:
-    type: object
-    properties:
-      files:
-        type: array
-        items:
-          type: string
-      remarks:
-        type: string
-  content:
-    type: object
-    properties:
-      type:
-        type: string
-      wjxId:
-        type: string
-      title:
-        type: string
-      detail:
-        type: string
-      condition:
-        $ref: '#/definitions/publishTask_condition'
-      time:
-        type: string
-      money:
-        type: number
-      number:
-        type: integer
-  inline_response_200_1:
     properties:
       name:
         type: string
@@ -699,29 +502,7 @@ definitions:
       id:
         type: string
         description: student id or worker id
-      creditScore:
-        type: integer
-  inline_response_200:
-    properties:
-      userId:
-        type: string
-      userInfo:
-        $ref: '#/definitions/inline_response_200_userInfo'
-      authState:
-        type: string
-  inline_response_200_2:
-    properties:
-      nickName:
-        type: string
-      avartUrl:
-        type: string
-      address:
-        type: string
-  inline_response_200_3:
-    properties:
-      hasAuthensized:
-        type: boolean
-  inline_response_200_4:
+  task:
     properties:
       id:
         type: string
@@ -737,3 +518,118 @@ definitions:
       left:
         type: integer
         description: the num of the left task.
+  taskdetail:
+    properties:
+      content:
+        $ref: '#/definitions/taskdetail_content'
+  pubTaskInfo:
+    properties:
+      type:
+        type: string
+      wjxId:
+        type: string
+      title:
+        type: string
+      detail:
+        type: string
+      condition:
+        $ref: '#/definitions/pubTaskInfo_condition'
+      time:
+        type: string
+      money:
+        type: number
+      number:
+        type: integer
+  inline_response_200:
+    properties:
+      userId:
+        type: string
+      userInfo:
+        $ref: '#/definitions/userInfo'
+      proveState:
+        type: string
+  inline_response_200_1:
+    properties:
+      idenInfo:
+        $ref: '#/definitions/idenInfo'
+      creditScore:
+        type: integer
+  userInfo_1:
+    type: object
+    properties:
+      nickName:
+        type: string
+      address:
+        type: string
+  inline_response_200_2:
+    properties:
+      proveState:
+        type: string
+  inline_response_200_3_user:
+    properties:
+      head:
+        type: string
+      nickName:
+        type: string
+      tel:
+        type: string
+  inline_response_200_3:
+    properties:
+      user:
+        $ref: '#/definitions/inline_response_200_3_user'
+      content:
+        $ref: '#/definitions/taskdetail'
+      isPublisher:
+        type: boolean
+      hasReceived:
+        type: integer
+        description: 0 stands for hasn't, 1 stands for has received, 2 stands for under review, 3 stands for has completed
+  cert:
+    type: object
+    properties:
+      files:
+        type: array
+        items:
+          type: string
+      remarks:
+        type: string
+  taskdetail_content_condition:
+    properties:
+      groups:
+        type: array
+        description: he/she who in the group can receive the task
+        items:
+          type: string
+      sex:
+        type: string
+  taskdetail_content:
+    properties:
+      type:
+        type: string
+      wjxId:
+        type: string
+        description: if the type is '问卷星', return wjxId.
+      title:
+        type: string
+      desc:
+        type: string
+      money:
+        type: number
+      num:
+        type: integer
+        description: the num of people who have got money.
+      left:
+        type: integer
+        description: the num of the left task.
+      condition:
+        $ref: '#/definitions/taskdetail_content_condition'
+  pubTaskInfo_condition:
+    properties:
+      groups:
+        type: array
+        items:
+          type: string
+      sex:
+        type: string
+      creditScore:
+        type: integer
