@@ -13,7 +13,7 @@ security:
   - read
   - write
 paths:
-  /login:
+  /user/login:
     post:
       tags:
       - user
@@ -52,7 +52,11 @@ paths:
                 $ref: '#/definitions/userInfo'
               proveState:
                 type: string
-  /prove:
+        400:
+          description: 'Error'
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  /user/prove:
     get:
       tags:
       - user
@@ -72,6 +76,10 @@ paths:
                 $ref: '#/definitions/idenInfo'
               creditScore:
                 type: integer
+        400:
+          description: 'Error'
+          schema:
+            $ref: '#/definitions/ErrorResponse'
     post:
       tags:
       - user
@@ -90,17 +98,20 @@ paths:
       responses:
         200:
           description: OK, set creditScore 100.
-  /modify:
+        400:
+          description: 'Error'
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  /user/modify:
     post:
       tags:
       - user
       summary: User modify his basic info.
       parameters:
-      - in: body
-        name: userInfo
+      - name: nickName
+        in: query
         required: false
-        schema:
-          $ref: '#/definitions/userInfo_1'
+        type: string
       - name: avartUrl
         in: query
         required: false
@@ -110,7 +121,11 @@ paths:
           description: modify success
           schema:
             $ref: '#/definitions/userInfo'
-  /getProveState:
+        400:
+          description: 'Error'
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  /user/getProveState:
     get:
       tags:
       - user
@@ -128,7 +143,11 @@ paths:
             properties:
               proveState:
                 type: string
-  /getBalance:
+        400:
+          description: 'Error'
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  /user/getBalance:
     get:
       tags:
       - user
@@ -145,7 +164,11 @@ paths:
             properties:
               balance:
                 type: number
-  /reCharge:
+        400:
+          description: 'Error'
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  /user/reCharge:
     post:
       tags:
       - user
@@ -166,7 +189,11 @@ paths:
             properties:
               balance:
                 type: number
-  /createGroup:
+        400:
+          description: 'Error'
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  /group/createGroup:
     get:
       tags:
       - group
@@ -184,8 +211,10 @@ paths:
         200:
           description: create success
         400:
-          description: '{message: the group already exists}'
-  /joinGroup:
+          description: 'Error'
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  /group/joinGroup:
     post:
       tags:
       - group
@@ -203,8 +232,10 @@ paths:
         200:
           description: join success
         400:
-          description: '{message: the group doesn''t exist}'
-  /getGroup:
+          description: 'Error'
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  /group/getGroup:
     get:
       tags:
       - group
@@ -221,7 +252,11 @@ paths:
             type: array
             items:
               type: string
-  /getCreatedGroup:
+        400:
+          description: 'Error'
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  /group/getCreatedGroup:
     get:
       tags:
       - group
@@ -238,7 +273,11 @@ paths:
             type: array
             items:
               type: string
-  /getJoinedGroup:
+        400:
+          description: 'Error'
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  /group/getJoinedGroup:
     get:
       tags:
       - group
@@ -255,7 +294,11 @@ paths:
             type: array
             items:
               type: string
-  /getTask:
+        400:
+          description: 'Error'
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  /task/getTask:
     get:
       tags:
       - task
@@ -276,8 +319,10 @@ paths:
             items:
               $ref: '#/definitions/task'
         400:
-          description: '{"message": "cannot get data"}'
-  /getPublishedTask:
+          description: 'Error'
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  /task/getPublishedTask:
     get:
       tags:
       - task
@@ -296,8 +341,10 @@ paths:
             items:
               $ref: '#/definitions/task'
         400:
-          description: '{"message": "cannot get data"}'
-  /getAcceptedTask:
+          description: 'Error'
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  /task/getAcceptedTask:
     get:
       tags:
       - task
@@ -316,8 +363,10 @@ paths:
             items:
               $ref: '#/definitions/task'
         400:
-          description: '{"message": "cannot get data"}'
-  /getTaskDetail:
+          description: 'Error'
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  /task/getTaskDetail:
     get:
       tags:
       - task
@@ -340,7 +389,7 @@ paths:
             type: object
             properties:
               user:
-                $ref: '#/definitions/inline_response_200_3_user'
+                $ref: '#/definitions/publisherInfo'
               content:
                 $ref: '#/definitions/taskdetail'
               isPublisher:
@@ -349,8 +398,10 @@ paths:
                 type: integer
                 description: 0 stands for hasn't, 1 stands for has received, 2 stands for under review, 3 stands for has completed
         400:
-          description: '{"message": "cannot get data"}'
-  /acceptTask:
+          description: 'Error'
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  /task/acceptTask:
     post:
       tags:
       - task
@@ -368,7 +419,11 @@ paths:
       responses:
         200:
           description: receive success
-  /commitJob:
+        400:
+          description: 'Error'
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  /task/commitJob:
     post:
       tags:
       - task
@@ -391,7 +446,11 @@ paths:
       responses:
         200:
           description: complete success
-  /addTaskInfo:
+        400:
+          description: 'Error'
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  /task/addTaskInfo:
     post:
       tags:
       - task
@@ -413,7 +472,11 @@ paths:
       responses:
         200:
           description: add success
-  /abandonTask:
+        400:
+          description: 'Error'
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  /task/abandonTask:
     post:
       tags:
       - task
@@ -431,7 +494,11 @@ paths:
       responses:
         200:
           description: complete success
-  /abortTask:
+        400:
+          description: 'Error'
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  /task/abortTask:
     post:
       tags:
       - task
@@ -449,7 +516,11 @@ paths:
       responses:
         200:
           description: complete success
-  /publishTask:
+        400:
+          description: 'Error'
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  /task/publishTask:
     post:
       tags:
       - task
@@ -468,6 +539,10 @@ paths:
       responses:
         200:
           description: publish success
+        400:
+          description: 'Error'
+          schema:
+            $ref: '#/definitions/ErrorResponse'
 securityDefinitions:
   application:
     type: oauth2
@@ -477,13 +552,16 @@ securityDefinitions:
       write: allows modifying resources
       read: allows reading resources
 definitions:
+  ErrorResponse:
+    type: 'object'
+    properties:
+      message:
+        type: 'string'
   userInfo:
     properties:
       nickName:
         type: string
       avartUrl:
-        type: string
-      address:
         type: string
   idenInfo:
     properties:
@@ -520,90 +598,6 @@ definitions:
         description: the num of the left task.
   taskdetail:
     properties:
-      content:
-        $ref: '#/definitions/taskdetail_content'
-  pubTaskInfo:
-    properties:
-      type:
-        type: string
-      wjxId:
-        type: string
-      title:
-        type: string
-      detail:
-        type: string
-      condition:
-        $ref: '#/definitions/pubTaskInfo_condition'
-      time:
-        type: string
-      money:
-        type: number
-      number:
-        type: integer
-  inline_response_200:
-    properties:
-      userId:
-        type: string
-      userInfo:
-        $ref: '#/definitions/userInfo'
-      proveState:
-        type: string
-  inline_response_200_1:
-    properties:
-      idenInfo:
-        $ref: '#/definitions/idenInfo'
-      creditScore:
-        type: integer
-  userInfo_1:
-    type: object
-    properties:
-      nickName:
-        type: string
-      address:
-        type: string
-  inline_response_200_2:
-    properties:
-      proveState:
-        type: string
-  inline_response_200_3_user:
-    properties:
-      head:
-        type: string
-      nickName:
-        type: string
-      tel:
-        type: string
-  inline_response_200_3:
-    properties:
-      user:
-        $ref: '#/definitions/inline_response_200_3_user'
-      content:
-        $ref: '#/definitions/taskdetail'
-      isPublisher:
-        type: boolean
-      hasReceived:
-        type: integer
-        description: 0 stands for hasn't, 1 stands for has received, 2 stands for under review, 3 stands for has completed
-  cert:
-    type: object
-    properties:
-      files:
-        type: array
-        items:
-          type: string
-      remarks:
-        type: string
-  taskdetail_content_condition:
-    properties:
-      groups:
-        type: array
-        description: he/she who in the group can receive the task
-        items:
-          type: string
-      sex:
-        type: string
-  taskdetail_content:
-    properties:
       type:
         type: string
       wjxId:
@@ -622,8 +616,43 @@ definitions:
         type: integer
         description: the num of the left task.
       condition:
-        $ref: '#/definitions/taskdetail_content_condition'
-  pubTaskInfo_condition:
+        $ref: '#/definitions/condition'
+  pubTaskInfo:
+    properties:
+      type:
+        type: string
+      wjxId:
+        type: string
+      title:
+        type: string
+      detail:
+        type: string
+      condition:
+        $ref: '#/definitions/condition'
+      time:
+        type: string
+      money:
+        type: number
+      number:
+        type: integer
+  publisherInfo:
+    properties:
+      avartUrl:
+        type: string
+      nickName:
+        type: string
+      tel:
+        type: string
+  cert:
+    type: object
+    properties:
+      files:
+        type: array
+        items:
+          type: string
+      remarks:
+        type: string
+  condition:
     properties:
       groups:
         type: array
