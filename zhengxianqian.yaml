@@ -20,31 +20,55 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/loginCode'
+            $ref: '#/definitions/LoginCode'
       responses:
         200:
-          description: OK, return the user's info and hasAuthenticated.
+          description: OK, return the user's info and proveState.
           schema:
-            $ref: '#/definitions/userInfo'
+            $ref: '#/definitions/UserInfo'
         400:
           description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
-  /user/proof:
+  /user/{userId}/info:
+    put:
+      tags:
+      - user
+      summary: User modify his basic info.
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        type: string
+      - name: body
+        in: body
+        required: true
+        schema:
+          $ref: '#/definitions/UserInfoWithoutId'
+      responses:
+        200:
+          description: modify success
+          schema:
+            $ref: '#/definitions/UserInfo'
+        400:
+          description: Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  /user/{userId}/proof:
     get:
       tags:
       - user
       summary: get user's indentity info
       parameters:
       - name: userId
-        in: query
+        in: path
         required: true
         type: string
       responses:
         200:
           description: OK, return the user indentity info
           schema:
-            $ref: '#/definitions/idenInfoWithCredit'
+            $ref: '#/definitions/IdenInfoWithCredit'
         400:
           description: Error
           schema:
@@ -54,34 +78,18 @@ paths:
       - user
       summary: User provide his prove identity.
       parameters:
+      - name: userId
+        in: path
+        required: true
+        type: string
       - in: body
         name: body
         required: true
         schema:
-          $ref: '#/definitions/idenInfo'
+          $ref: '#/definitions/IdenInfo'
       responses:
         200:
           description: OK, set creditScore 100.
-        400:
-          description: Error
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-  /user/info:
-    put:
-      tags:
-      - user
-      summary: User modify his basic info.
-      parameters:
-      - name: body
-        in: body
-        required: true
-        schema:
-          $ref: '#/definitions/userInfo2'
-      responses:
-        200:
-          description: modify success
-          schema:
-            $ref: '#/definitions/userInfo'
         400:
           description: Error
           schema:
@@ -90,7 +98,7 @@ paths:
     get:
       tags:
       - user
-      summary: User get his authState.
+      summary: User get his proveState.
       parameters:
       - name: userId
         in: path
@@ -100,7 +108,7 @@ paths:
         200:
           description: check success
           schema:
-            $ref: '#/definitions/proveState'
+            $ref: '#/definitions/ProveState'
         400:
           description: Error
           schema:
@@ -119,9 +127,7 @@ paths:
         200:
           description: publish success
           schema:
-            properties:
-              balance:
-                type: number
+            $ref: '#/definitions/Balance'
         400:
           description: Error
           schema:
@@ -135,25 +141,20 @@ paths:
         in: path
         required: true
         type: string
-      - name: body
-        in: body
+      - name: money
+        in: query
         required: true
-        schema:
-          properties:
-            money:
-              type: string
+        type: string
       responses:
         200:
-          description: publish success
+          description: recharge success
           schema:
-            properties:
-              balance:
-                type: number
+            $ref: '#/definitions/Balance'
         400:
           description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
-  /group:
+  /groups:
     get:
       tags:
       - group
@@ -162,9 +163,7 @@ paths:
         200:
           description: create success
           schema:
-            type: array
-            items:
-              type: string
+            $ref: '#/definitions/Groups'
         400:
           description: Error
           schema:
@@ -183,16 +182,7 @@ paths:
         200:
           description: get success
           schema:
-            type: object
-            properties:
-              created:
-                type: array
-                items:
-                  type: string
-              joined:
-                type: array
-                items:
-                  type: string
+            $ref: '#/definitions/MyGroup'
         400:
           description: Error
           schema:
@@ -206,13 +196,10 @@ paths:
         in: path
         required: true
         type: string
-      - name: body
-        in: body
+      - name: groupName
+        in: query
         required: true
-        schema:
-          properties:
-            groupName:
-              type: string
+        type: string
       responses:
         200:
           description: create success
@@ -229,13 +216,10 @@ paths:
         in: path
         required: true
         type: string
-      - name: body
-        in: body
+      - name: groupName
+        in: query
         required: true
-        schema:
-          properties:
-            groupName:
-              type: string
+        type: string
       responses:
         200:
           description: join success
@@ -252,13 +236,10 @@ paths:
         in: path
         required: true
         type: string
-      - name: body
-        in: body
+      - name: groupName
+        in: query
         required: true
-        schema:
-          properties:
-            groupName:
-              type: string
+        type: string
       responses:
         200:
           description: quit success
@@ -266,7 +247,7 @@ paths:
           description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
-  /task:
+  /tasks:
     get:
       tags:
       - task
@@ -285,7 +266,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/task'
+              $ref: '#/definitions/Task'
         400:
           description: Error
           schema:
@@ -307,7 +288,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/task'
+              $ref: '#/definitions/Task'
         400:
           description: Error
           schema:
@@ -329,7 +310,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/task'
+              $ref: '#/definitions/Task'
         400:
           description: Error
           schema:
@@ -350,7 +331,7 @@ paths:
         200:
           description: success
           schema:
-            $ref: '#/definitions/allTaskDetail'
+            $ref: '#/definitions/TaskDetailWithPublisher'
         400:
           description: Error
           schema:
@@ -375,14 +356,7 @@ paths:
           schema:
             type: array
             items:
-              type: object
-              properties:
-                avartUrl: 
-                  type: string
-                nickName:
-                  type: string
-                tel:
-                  type: string
+              $ref: '#/definitions/UserInfoWithTel'
         400:
           description: Error
           schema:
@@ -400,11 +374,7 @@ paths:
         in: body
         required: true
         schema:
-          properties:
-            userId:
-              type: string
-            content:
-              $ref: '#/definitions/publisherInfo'
+          $ref: '#/definitions/TaskDetailWithUserId'
       responses:
         200:
           description: receive success
@@ -425,11 +395,7 @@ paths:
         in: body
         required: true
         schema:
-          properties:
-            userId:
-              type: string
-            info:
-              type: string
+          $ref: '#/definitions/ExtraTaskInfo'
       responses:
         200:
           description: receive success
@@ -447,13 +413,10 @@ paths:
         in: path
         required: true
         type: string
-      - name: body
-        in: body
+      - name: userId
+        in: query
         required: true
-        schema:
-          properties:
-            userId: 
-              type: string
+        type: string
       responses:
         200:
           description: abort success
@@ -476,11 +439,7 @@ paths:
         in: body
         required: true
         schema:
-          properties:
-            userId:
-              type: string
-            cert:
-              $ref: '#/definitions/cert'
+          $ref: '#/definitions/Cert'
       responses:
         200:
           description: complete success
@@ -498,13 +457,10 @@ paths:
         in: path
         required: true
         type: string
-      - name: body
-        in: body
+      - name: userId
+        in: query
         required: true
-        schema:
-          properties:
-            userId: 
-              type: string
+        type: string
       responses:
         200:
           description: abandon success
@@ -529,10 +485,7 @@ paths:
         200:
           description: 'OK'
           schema:
-            type: 'object'
-            properties:
-              url:
-                type: 'string'
+            $ref: '#/definitions/Url'
         400:
           description: 'Error'
           schema:
@@ -543,7 +496,7 @@ definitions:
     properties:
       message:
         type: string
-  loginCode:
+  LoginCode:
     properties:
       js_code:
         description: user's js_code
@@ -557,13 +510,7 @@ definitions:
       encryptedData:
         description: user's encryptedData when he/she has authensized getUserInfo
         type: string
-  userInfo2:
-    properties:
-      nickName:
-        type: string
-      avartUrl:
-        type: string
-  userInfo:
+  UserInfo:
     properties:
       userId:
         type: string
@@ -573,7 +520,13 @@ definitions:
         type: string
       proveState:
         type: string
-  idenInfo:
+  UserInfoWithoutId:
+    properties:
+      nickName:
+        type: string
+      avartUrl:
+        type: string
+  IdenInfo:
     properties:
       name:
         type: string
@@ -593,7 +546,26 @@ definitions:
       cert:
         description: user's cert path
         type: string
-  task:
+  Balance:
+    properties:
+      balance:
+        type: number
+  Groups:
+    type: array
+    items:
+      type: object
+      properties:
+        groupId: 
+          type: string
+        groupName: 
+          type: string
+  MyGroup:
+    properties:
+      created:
+        $ref: '#/definitions/Groups'
+      joined:
+        $ref: '#/definitions/Groups'
+  Task:
     properties:
       id:
         type: string
@@ -606,10 +578,12 @@ definitions:
         type: string
       money:
         type: number
-      left:
+      maxNum:
         type: integer
-        description: the num of the left task.
-  taskdetail:
+      partNum:
+        type: integer
+        description: the num of participants.
+  TaskDetail:
     properties:
       type:
         type: string
@@ -622,15 +596,26 @@ definitions:
         type: string
       money:
         type: number
-      num:
+      maxNum:
         type: integer
-        description: the num of people who have got money.
-      left:
+      partNum:
         type: integer
-        description: the num of the left task.
+        description: the num of participants.
       condition:
-        $ref: '#/definitions/condition'
-  publisherInfo:
+        $ref: '#/definitions/Condition'
+  TaskDetailWithUserId:
+    properties:
+      userId:
+        type: string
+      content:
+        $ref: '#/definitions/TaskDetail'
+  ExtraTaskInfo:
+    properties:
+      userId:
+        type: string
+      content:
+        type: string
+  UserInfoWithTel:
     properties:
       avartUrl:
         type: string
@@ -638,16 +623,18 @@ definitions:
         type: string
       tel:
         type: string
-  cert:
+  Cert:
     type: object
     properties:
+      userId: 
+        type: string
       files:
         type: array
         items:
           type: string
       remarks:
         type: string
-  condition:
+  Condition:
     properties:
       groups:
         type: array
@@ -657,24 +644,29 @@ definitions:
         type: string
       creditScore:
         type: integer
-  idenInfoWithCredit:
+  IdenInfoWithCredit:
     properties:
       idenInfo:
-        $ref: '#/definitions/idenInfo'
+        $ref: '#/definitions/IdenInfo'
       creditScore:
         type: integer
-  proveState:
+  ProveState:
     properties:
       proveState:
         type: string
-  allTaskDetail:
+  TaskDetailWithPublisher:
     properties:
       user:
-        $ref: '#/definitions/publisherInfo'
+        $ref: '#/definitions/UserInfoWithTel'
       content:
-        $ref: '#/definitions/taskdetail'
+        $ref: '#/definitions/TaskDetail'
       isPublisher:
         type: boolean
       hasReceived:
         type: integer
         description: 0 stands for hasn't, 1 stands for has received, 2 stands for under review, 3 stands for has completed
+  Url:
+    type: 'object'
+    properties:
+      url:
+        type: 'string'
