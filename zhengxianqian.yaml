@@ -4,38 +4,23 @@ info:
   description: This is an example of using OAuth2 Application Flow in a specification to describe security to your API.
   version: 1.0.0
   title: Sample Application Flow OAuth2 Project
-host: virtserver.swaggerhub.com
-basePath: /SYSU-GFS/zhengxianqian/1.0.0
+host: www.zhengxianqian.club
+basePath: /
 schemes:
 - https
 paths:
-  /user/login:
+  /user/session:
     post:
       tags:
       - user
       summary: Users login
       description: Users login
       parameters:
-      - name: js_code
-        in: query
-        description: user's js_code
-        required: true
-        type: string
-      - name: app_id
-        in: query
-        description: miniprogram app_id
-        required: true
-        type: string
-      - name: app_secret
-        in: query
-        description: miniprogram app_secret
-        required: true
-        type: string
-      - name: encryptedData
-        in: query
-        description: user's encryptedData when he/she has authensized getUserInfo
-        required: false
-        type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/loginCode'
       responses:
         200:
           description: OK, return the user's info and hasAuthenticated.
@@ -45,7 +30,7 @@ paths:
           description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
-  /user/prove:
+  /user/proof:
     get:
       tags:
       - user
@@ -53,7 +38,7 @@ paths:
       parameters:
       - name: userId
         in: query
-        required: false
+        required: true
         type: string
       responses:
         200:
@@ -70,15 +55,10 @@ paths:
       summary: User provide his prove identity.
       parameters:
       - in: body
-        name: idenInfo
+        name: body
         required: true
         schema:
           $ref: '#/definitions/idenInfo'
-      - name: cert
-        in: query
-        description: user's cert path
-        required: true
-        type: string
       responses:
         200:
           description: OK, set creditScore 100.
@@ -86,20 +66,17 @@ paths:
           description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
-  /user/modify:
-    post:
+  /user/info:
+    put:
       tags:
       - user
       summary: User modify his basic info.
       parameters:
-      - name: nickName
-        in: query
-        required: false
-        type: string
-      - name: avartUrl
-        in: query
-        required: false
-        type: string
+      - name: body
+        in: body
+        required: true
+        schema:
+          $ref: '#/definitions/userInfo2'
       responses:
         200:
           description: modify success
@@ -109,15 +86,15 @@ paths:
           description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
-  /user/getProveState:
+  /user/{userId}/proof/state:
     get:
       tags:
       - user
       summary: User get his authState.
       parameters:
       - name: userId
-        in: query
-        required: false
+        in: path
+        required: true
         type: string
       responses:
         200:
@@ -128,14 +105,14 @@ paths:
           description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
-  /user/getBalance:
+  /user/{userId}/balance:
     get:
       tags:
       - user
       summary: User get the balance.
       parameters:
       - name: userId
-        in: query
+        in: path
         required: true
         type: string
       responses:
@@ -149,20 +126,22 @@ paths:
           description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
-  /user/reCharge:
-    post:
+    put:
       tags:
       - user
       summary: User recharge.
       parameters:
       - name: userId
-        in: query
+        in: path
         required: true
         type: string
-      - name: money
-        in: query
+      - name: body
+        in: body
         required: true
-        type: number
+        schema:
+          properties:
+            money:
+              type: string
       responses:
         200:
           description: publish success
@@ -174,20 +153,39 @@ paths:
           description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
-  /group/createGroup:
+  /group:
     get:
       tags:
       - group
-      summary: User create the group.
+      summary: User get the all group.
+      responses:
+        200:
+          description: create success
+          schema:
+            type: array
+            items:
+              type: string
+        400:
+          description: Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  /group/{userId}:
+    post:
+      tags:
+      - group
+      summary: User creates the group.
       parameters:
       - name: userId
-        in: query
+        in: path
         required: true
         type: string
-      - name: groupName
-        in: query
+      - name: body
+        in: body
         required: true
-        type: string
+        schema:
+          properties:
+            groupName:
+              type: string
       responses:
         200:
           description: create success
@@ -195,18 +193,13 @@ paths:
           description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
-  /group/joinGroup:
-    post:
+    put:
       tags:
       - group
-      summary: User join the group.
+      summary: User joins the task.
       parameters:
       - name: userId
-        in: query
-        required: true
-        type: string
-      - name: groupName
-        in: query
+        in: path
         required: true
         type: string
       responses:
@@ -216,70 +209,34 @@ paths:
           description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
-  /group/getGroup:
     get:
       tags:
       - group
-      summary: User get the all task.
+      summary: User get his join or created group.
       parameters:
       - name: userId
-        in: query
+        in: path
         required: true
         type: string
       responses:
         200:
           description: get success
           schema:
-            type: array
-            items:
-              type: string
+            type: object
+            properties:
+              created:
+                type: array
+                items:
+                  type: string
+              joined:
+                type: array
+                items:
+                  type: string
         400:
           description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
-  /group/getCreatedGroup:
-    get:
-      tags:
-      - group
-      summary: User publish the task he created.
-      parameters:
-      - name: userId
-        in: query
-        required: true
-        type: string
-      responses:
-        200:
-          description: get success
-          schema:
-            type: array
-            items:
-              type: string
-        400:
-          description: Error
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-  /group/getJoinedGroup:
-    get:
-      tags:
-      - group
-      summary: User get the groups he joined.
-      parameters:
-      - name: userId
-        in: query
-        required: true
-        type: string
-      responses:
-        200:
-          description: get success
-          schema:
-            type: array
-            items:
-              type: string
-        400:
-          description: Error
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-  /task/getTask:
+  /task:
     get:
       tags:
       - task
@@ -303,7 +260,7 @@ paths:
           description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
-  /task/getPublishedTask:
+  /task/{userId}/publishment:
     get:
       tags:
       - task
@@ -311,7 +268,7 @@ paths:
       description: Returns the published tasks, the max number is 10. If the page is the last page, the return all left.
       parameters:
       - name: userId
-        in: query
+        in: path
         required: true
         type: string
       responses:
@@ -325,7 +282,7 @@ paths:
           description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
-  /task/getAcceptedTask:
+  /task/{userId}/acceptment:
     get:
       tags:
       - task
@@ -333,7 +290,7 @@ paths:
       description: Returns the published tasks, the max number is 10. If the page is the last page, the return all left.
       parameters:
       - name: userId
-        in: query
+        in: path
         required: true
         type: string
       responses:
@@ -347,7 +304,7 @@ paths:
           description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
-  /task/getTaskDetail:
+  /task/{taskId}:
     get:
       tags:
       - task
@@ -355,13 +312,9 @@ paths:
       description: Returns one task's detail
       parameters:
       - name: taskId
-        in: query
+        in: path
         description: The task's id in database.
-        required: false
-        type: string
-      - name: userId
-        in: query
-        required: false
+        required: true
         type: string
       responses:
         200:
@@ -372,21 +325,56 @@ paths:
           description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
-  /task/acceptTask:
-    post:
+  /task/{taskId}/publisher:
+    get:
       tags:
       - task
-      summary: User accept the task.
-      description: This operation shows how to override the global security defined above, as we want to open it up for all users.
+      summary: Publisher get the info of accepters
       parameters:
+      - name: taskId
+        in: path
+        required: true
+        type: string
       - name: userId
         in: query
         required: true
         type: string
+      responses:
+        200:
+          description: receive success
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                avartUrl: 
+                  type: string
+                nickName:
+                  type: string
+                tel:
+                  type: string
+        400:
+          description: Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+    post:
+      tags:
+      - task
+      summary: User publish the task.
+      parameters:
       - name: taskId
-        in: query
+        in: path
         required: true
         type: string
+      - name: body
+        in: body
+        required: true
+        schema:
+          properties:
+            userId:
+              type: string
+            content:
+              $ref: '#/definitions/publisherInfo'
       responses:
         200:
           description: receive success
@@ -394,26 +382,75 @@ paths:
           description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
-  /task/commitJob:
+    put:
+      tags:
+      - task
+      summary: Publisher add the task info.
+      parameters:
+      - name: taskId
+        in: path
+        required: true
+        type: string
+      - name: body
+        in: body
+        required: true
+        schema:
+          properties:
+            userId:
+              type: string
+            info:
+              type: string
+      responses:
+        200:
+          description: receive success
+        400:
+          description: Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+    delete:
+      tags:
+      - task
+      summary: Publisher abort the task.
+      description: This operation shows how to override the global security defined above, as we want to open it up for all users.
+      parameters:
+      - name: taskId
+        in: path
+        required: true
+        type: string
+      - name: body
+        in: body
+        required: true
+        schema:
+          properties:
+            userId: 
+              type: string
+      responses:
+        200:
+          description: abort success
+        400:
+          description: Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  /task/{taskId}/accepter:
     post:
       tags:
       - task
       summary: User commit the job.
       description: This operation shows how to override the global security defined above, as we want to open it up for all users.
       parameters:
-      - name: userId
-        in: query
-        required: true
-        type: string
       - name: taskId
-        in: query
+        in: path
         required: true
         type: string
-      - in: body
-        name: cert
-        required: false
+      - name: body
+        in: body
+        required: true
         schema:
-          $ref: '#/definitions/cert'
+          properties:
+            userId:
+              type: string
+            cert:
+              $ref: '#/definitions/cert'
       responses:
         200:
           description: complete success
@@ -421,97 +458,53 @@ paths:
           description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
-  /task/addTaskInfo:
-    post:
-      tags:
-      - task
-      summary: Publisher add the additional task detail.
-      description: This operation shows how to override the global security defined above, as we want to open it up for all users.
-      parameters:
-      - name: userId
-        in: query
-        required: true
-        type: string
-      - name: taskId
-        in: query
-        required: true
-        type: string
-      - name: extraInfo
-        in: query
-        required: true
-        type: string
-      responses:
-        200:
-          description: add success
-        400:
-          description: Error
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-  /task/abandonTask:
-    post:
+    delete:
       tags:
       - task
       summary: Accepter abandon the task.
       description: This operation shows how to override the global security defined above, as we want to open it up for all users.
       parameters:
-      - name: userId
-        in: query
-        required: true
-        type: string
       - name: taskId
-        in: query
+        in: path
         required: true
         type: string
-      responses:
-        200:
-          description: complete success
-        400:
-          description: Error
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-  /task/abortTask:
-    post:
-      tags:
-      - task
-      summary: Publisher abort the task.
-      description: This operation shows how to override the global security defined above, as we want to open it up for all users.
-      parameters:
-      - name: userId
-        in: query
-        required: true
-        type: string
-      - name: taskId
-        in: query
-        required: true
-        type: string
-      responses:
-        200:
-          description: complete success
-        400:
-          description: Error
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-  /task/publishTask:
-    post:
-      tags:
-      - task
-      summary: User publish the task.
-      description: User publish the normal task.
-      parameters:
-      - name: userId
-        in: query
-        required: true
-        type: string
-      - in: body
-        name: content
+      - name: body
+        in: body
         required: true
         schema:
-          $ref: '#/definitions/pubTaskInfo'
+          properties:
+            userId: 
+              type: string
       responses:
         200:
-          description: publish success
+          description: abandon success
         400:
           description: Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  /image:
+    post:
+      tags:
+      - 'System'
+      summary: 'upload image'
+      consumes:
+      - 'multipart/form-data'
+      parameters:
+      - in: 'formData'
+        name: 'image'
+        type: 'file'
+        description: 'image'
+        required: true
+      responses:
+        200:
+          description: 'OK'
+          schema:
+            type: 'object'
+            properties:
+              url:
+                type: 'string'
+        400:
+          description: 'Error'
           schema:
             $ref: '#/definitions/ErrorResponse'
 definitions:
@@ -519,6 +512,26 @@ definitions:
     type: object
     properties:
       message:
+        type: string
+  loginCode:
+    properties:
+      js_code:
+        description: user's js_code
+        type: string
+      app_id:
+        description: miniprogram app_id
+        type: string
+      app_secret:
+        description: miniprogram app_secret
+        type: string
+      encryptedData:
+        description: user's encryptedData when he/she has authensized getUserInfo
+        type: string
+  userInfo2:
+    properties:
+      nickName:
+        type: string
+      avartUrl:
         type: string
   userInfo:
     properties:
@@ -547,6 +560,9 @@ definitions:
       id:
         type: string
         description: student id or worker id
+      cert:
+        description: user's cert path
+        type: string
   task:
     properties:
       id:
@@ -584,24 +600,6 @@ definitions:
         description: the num of the left task.
       condition:
         $ref: '#/definitions/condition'
-  pubTaskInfo:
-    properties:
-      type:
-        type: string
-      wjxId:
-        type: string
-      title:
-        type: string
-      detail:
-        type: string
-      condition:
-        $ref: '#/definitions/condition'
-      time:
-        type: string
-      money:
-        type: number
-      number:
-        type: integer
   publisherInfo:
     properties:
       avartUrl:
