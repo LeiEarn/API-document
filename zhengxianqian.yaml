@@ -170,6 +170,33 @@ paths:
           schema:
             $ref: '#/definitions/ErrorResponse'
   /group/{userId}:
+    get:
+      tags:
+      - group
+      summary: User get his join or created group.
+      parameters:
+      - name: userId
+        in: path
+        required: true
+        type: string
+      responses:
+        200:
+          description: get success
+          schema:
+            type: object
+            properties:
+              created:
+                type: array
+                items:
+                  type: string
+              joined:
+                type: array
+                items:
+                  type: string
+        400:
+          description: Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
     post:
       tags:
       - group
@@ -202,6 +229,13 @@ paths:
         in: path
         required: true
         type: string
+      - name: body
+        in: body
+        required: true
+        schema:
+          properties:
+            groupName:
+              type: string
       responses:
         200:
           description: join success
@@ -209,29 +243,25 @@ paths:
           description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
-    get:
+    delete:
       tags:
       - group
-      summary: User get his join or created group.
+      summary: User quits the task.
       parameters:
       - name: userId
         in: path
         required: true
         type: string
+      - name: body
+        in: body
+        required: true
+        schema:
+          properties:
+            groupName:
+              type: string
       responses:
         200:
-          description: get success
-          schema:
-            type: object
-            properties:
-              created:
-                type: array
-                items:
-                  type: string
-              joined:
-                type: array
-                items:
-                  type: string
+          description: quit success
         400:
           description: Error
           schema:
