@@ -4,7 +4,7 @@ info:
   description: This is an example of using OAuth2 Application Flow in a specification to describe security to your API.
   version: 1.0.0
   title: Sample Application Flow OAuth2 Project
-host: www.zhengxianqian.club
+host: www.zhengxianqian.club:8088
 basePath: /
 schemes:
 - https
@@ -30,16 +30,12 @@ paths:
           description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
-  /user/{userId}/info:
+  /user/info:
     put:
       tags:
       - user
       summary: User modify his basic info.
       parameters:
-      - name: userId
-        in: path
-        required: true
-        type: string
       - name: body
         in: body
         required: true
@@ -54,14 +50,14 @@ paths:
           description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
-  /user/{userId}/proof:
+  /user/proof:
     get:
       tags:
       - user
       summary: get user's indentity info
       parameters:
       - name: userId
-        in: path
+        in: query
         required: true
         type: string
       responses:
@@ -78,10 +74,6 @@ paths:
       - user
       summary: User provide his prove identity.
       parameters:
-      - name: userId
-        in: path
-        required: true
-        type: string
       - in: body
         name: body
         required: true
@@ -260,6 +252,12 @@ paths:
         required: true
         type: integer
         default: 0
+      - name: type
+        in: query
+        description: default, recommend, easy
+        required: false
+        type: string
+        default: default
       responses:
         200:
           description: success
@@ -271,17 +269,22 @@ paths:
           description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
-  /task/{userId}/publishment:
+  /task/{userId}:
     get:
       tags:
       - task
-      summary: Returns all his own published tasks in the page.
+      summary: Returns all his own published or accepted tasks in the page.
       description: Returns the published tasks, the max number is 10. If the page is the last page, the return all left.
       parameters:
       - name: userId
         in: path
         required: true
         type: string
+      - name: type
+        in: query
+        required: true
+        type: string
+        description: acceptment or publishment
       responses:
         200:
           description: success
@@ -293,29 +296,28 @@ paths:
           description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
-  /task/{userId}/acceptment:
-    get:
+    post:
       tags:
       - task
-      summary: Returns all his accepted tasks in the page.
-      description: Returns the published tasks, the max number is 10. If the page is the last page, the return all left.
+      summary: User publish the task.
       parameters:
       - name: userId
         in: path
         required: true
         type: string
+      - name: body
+        in: body
+        required: true
+        schema:
+          $ref: '#/definitions/TaskDetail'
       responses:
         200:
-          description: success
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/Task'
+          description: receive success
         400:
           description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
-  /task/{taskId}:
+  /task/{taskId}/info:
     get:
       tags:
       - task
@@ -336,52 +338,6 @@ paths:
           description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
-  /task/{taskId}/publisher:
-    get:
-      tags:
-      - task
-      summary: Publisher get the info of accepters
-      parameters:
-      - name: taskId
-        in: path
-        required: true
-        type: string
-      - name: userId
-        in: query
-        required: true
-        type: string
-      responses:
-        200:
-          description: receive success
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/UserInfoWithTel'
-        400:
-          description: Error
-          schema:
-            $ref: '#/definitions/ErrorResponse'
-    post:
-      tags:
-      - task
-      summary: User publish the task.
-      parameters:
-      - name: taskId
-        in: path
-        required: true
-        type: string
-      - name: body
-        in: body
-        required: true
-        schema:
-          $ref: '#/definitions/TaskDetailWithUserId'
-      responses:
-        200:
-          description: receive success
-        400:
-          description: Error
-          schema:
-            $ref: '#/definitions/ErrorResponse'
     put:
       tags:
       - task
@@ -398,7 +354,7 @@ paths:
           $ref: '#/definitions/ExtraTaskInfo'
       responses:
         200:
-          description: receive success
+          description: add success
         400:
           description: Error
           schema:
@@ -425,24 +381,49 @@ paths:
           schema:
             $ref: '#/definitions/ErrorResponse'
   /task/{taskId}/accepter:
+    get:
+      tags:
+      - task
+      summary: Publisher get the info of accepters
+      parameters:
+      - name: taskId
+        in: path
+        required: true
+        type: string
+      - name: userId
+        in: query
+        required: true
+        type: string
+        description: the userId of publisher
+      responses:
+        200:
+          description: receive success
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/UserInfoWithTel'
+        400:
+          description: Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
     post:
       tags:
       - task
-      summary: User commit the job.
+      summary: User accept the task.
       description: This operation shows how to override the global security defined above, as we want to open it up for all users.
       parameters:
       - name: taskId
         in: path
         required: true
         type: string
-      - name: body
-        in: body
+      - name: userId
+        in: query
         required: true
-        schema:
-          $ref: '#/definitions/Cert'
+        type: string
+        description: the userId of user ready to accept
       responses:
         200:
-          description: complete success
+          description: accept success
         400:
           description: Error
           schema:
@@ -461,9 +442,82 @@ paths:
         in: query
         required: true
         type: string
+        description: the userId of accepter
       responses:
         200:
           description: abandon success
+        400:
+          description: Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  /task/{taskId}/job:
+    post:
+      tags:
+      - task
+      summary: User commit the job.
+      parameters:
+      - name: taskId
+        in: path
+        required: true
+        type: string
+      - name: body
+        in: body
+        required: true
+        schema:
+          $ref: '#/definitions/Cert'
+      responses:
+        200:
+          description: complete success
+        400:
+          description: Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+    get:
+      tags:
+      - task
+      summary: User get all the Job.
+      parameters:
+      - name: taskId
+        in: path
+        required: true
+        type: string
+      - name: userId
+        in: query
+        required: true
+        type: string
+      responses:
+        200:
+          description: complete success
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Cert'
+        400:
+          description: Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+    put:
+      tags:
+      - task
+      summary: Publisher agree the job of the user.
+      description: This operation shows how to override the global security defined above, as we want to open it up for all users.
+      parameters:
+      - name: taskId
+        in: path
+        required: true
+        type: string
+      - name: userId
+        in: query
+        required: true
+        type: string
+      - name: state
+        in: query
+        required: true
+        type: string
+        description: agree, reject
+      responses:
+        200:
+          description: success
         400:
           description: Error
           schema:
@@ -516,7 +570,7 @@ definitions:
         type: string
       nickName:
         type: string
-      avartUrl:
+      avatarUrl:
         type: string
       proveState:
         type: string
@@ -524,7 +578,7 @@ definitions:
     properties:
       nickName:
         type: string
-      avartUrl:
+      avatarUrl:
         type: string
   IdenInfo:
     properties:
@@ -559,6 +613,10 @@ definitions:
           type: string
         groupName: 
           type: string
+        groupDesc:
+          type: string
+        groupIcon:
+          type: string
   MyGroup:
     properties:
       created:
@@ -583,16 +641,20 @@ definitions:
       partNum:
         type: integer
         description: the num of participants.
+      isCommited:
+        type: boolean
   TaskDetail:
     properties:
       type:
         type: string
       wjxId:
         type: string
-        description: if the type is '问卷星', return wjxId.
+        description: if the type is 'wjx', return wjxId.
       title:
         type: string
       desc:
+        type: string
+      time:
         type: string
       money:
         type: number
@@ -603,12 +665,6 @@ definitions:
         description: the num of participants.
       condition:
         $ref: '#/definitions/Condition'
-  TaskDetailWithUserId:
-    properties:
-      userId:
-        type: string
-      content:
-        $ref: '#/definitions/TaskDetail'
   ExtraTaskInfo:
     properties:
       userId:
@@ -617,7 +673,9 @@ definitions:
         type: string
   UserInfoWithTel:
     properties:
-      avartUrl:
+      userId:
+        type: string
+      avatarUrl:
         type: string
       nickName:
         type: string
@@ -660,8 +718,6 @@ definitions:
         $ref: '#/definitions/UserInfoWithTel'
       content:
         $ref: '#/definitions/TaskDetail'
-      isPublisher:
-        type: boolean
       hasReceived:
         type: integer
         description: 0 stands for hasn't, 1 stands for has received, 2 stands for under review, 3 stands for has completed
